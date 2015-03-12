@@ -1,6 +1,7 @@
 <HTML>
 
     <head>
+        <meta charset="UTF-8">
         <title>kc_stats 0.1</title>
     </head>
 
@@ -20,8 +21,11 @@
             <div>
                 <h2>/{{ board }}/:</h2>
                 <a href="hour_{{ board }}.json"><img src="hour_{{ board }}.png"></a>
+                <br>
                 <a href="weekday_{{ board }}.json"><img src="weekday_{{ board }}.png"></a>
-                <br>raw: <a href="last_days_{{ board }}.tar.xz">last days</a>, <a href="last_week_{{ board }}.tar.xz">last week</a>, <a href="all_{{ board }}.tar.xz">complete</a>
+                <a href="weekday_busfahrer_{{ board }}.json"><img src="weekday_busfahrer_{{ board }}.png"></a>
+                <br>
+                raw: <a href="last_days_{{ board }}.tar.xz">last days</a>, <a href="last_week_{{ board }}.tar.xz">last week</a>, <a href="all_{{ board }}.tar.xz">complete</a>
             </div>
         {% endfor %}
 

@@ -50,6 +50,16 @@ def work_on_everything():
             plot_weekday(weekdays_series, "post distribution per weekday on /{}/".format(board.board),
                          os.path.join(FILEDIR, "weekday_{}.png".format(board.board)))
 
+            busfahrers = series_diff.between_time('20:00', '23:59')
+            busfahrers = busfahrers.groupby(busfahrers.index.weekday)
+            busfahrers_out = [(int(weekday[0]), float(weekday[1].mean().round(2))) for weekday in weekdays]
+            with open(os.path.join(FILEDIR, "weekday_busfahrer_{}.json".format(board.board)), "w") as outfile:
+                json.dump(weekdays_out, outfile)
+            busfahrer_series = pandas.Series([busfahrer[1].mean() for busfahrer in busfahrers],
+                                             index=[busfahrer[0] for busfahrer in busfahrers])
+            plot_weekday(busfahrer_series, "post distribution per weekday on /{}/ (busfahrer editon)".format(board.board),
+                         os.path.join(FILEDIR, "weekday_busfahrer_{}.png".format(board.board)))
+
             hours = series_diff.groupby(series_diff.index.hour)
             hours_out = [(int(hour[0]), float(hour[1].mean().round(2))) for hour in hours]
             with open(os.path.join(FILEDIR, "hour_{}.json".format(board.board)), "w") as outfile:
@@ -128,8 +138,8 @@ if __name__ == '__main__':
     plt.style.use('ggplot')
     # plt.xkcd()
 
-    #work_on_everything()
-    #last_days()
-    #last_week()
+    work_on_everything()
+    last_days()
+    last_week()
 
     write_html()
