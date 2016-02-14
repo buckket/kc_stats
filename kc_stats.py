@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from database import Imageboard, Post
 from plot import plot_weekday, plot_hour
-from plot import plot_last_days, plot_last_week
+from plot import plot_last_days, plot_last_week, plot_last_year
 
 
 FILEDIR = "out"
@@ -112,6 +112,33 @@ def last_week():
     plot_last_week(week_data, "last 7 days", os.path.join(FILEDIR, "last_week.png"))
 
 
+def last_year():
+    year_data = []
+    year_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365)
+    for imageboard in Imageboard.select():
+        for board in imageboard.boards:
+            data = board.data.select().where(Post.timestamp >= year_ago)
+            series = pandas.Series([post.post_id for post in data], index=[post.timestamp for post in data])
+
+            # Apply tz info
+            series = series.tz_localize('UTC')
+            series = series.tz_convert('Europe/Berlin')
+
+            # Resample and interpolate missing values
+            series = series.resample('1min').interpolate()
+
+            series_diff = series.diff()
+            series_diff = series_diff.resample('1H', how='mean')
+
+            #filename = "last_year_{}.csv".format(board.board)
+            #series_diff.to_csv(os.path.join(FILEDIR, filename))
+            #compress_file(filename)
+
+            series_mean = pandas.rolling_mean(series_diff, 168)
+            year_data.append((board.board, series_mean))
+    plot_last_year(year_data, "last year on krautchan", os.path.join(FILEDIR, "last_year.png"))
+
+
 def write_html():
     import jinja2
 
@@ -126,10 +153,12 @@ def write_html():
 
 if __name__ == '__main__':
     plt.style.use('ggplot')
-    # plt.xkcd()
+    plt.xkcd()
 
-    #work_on_everything()
-    #last_days()
-    #last_week()
+    work_on_everything()
+    last_days()
+    last_week()
+    last_year()
 
     write_html()
+

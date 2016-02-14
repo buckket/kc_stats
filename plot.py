@@ -13,7 +13,7 @@ def _create_chart():
 def _apply_labels(ax, title):
     ax.set_title(title)
     ax.set_ylabel("posts per minute")
-    ax.set_xlabel("bython powered - made by loom in 2015", fontsize=6)
+    ax.set_xlabel("bython powered - made by loom in 2016", fontsize=6)
 
 
 def _enable_ticks(ax):
@@ -117,5 +117,32 @@ def plot_last_week(data, title, filename):
         ax_all.plot(series[1].index, series[1], label="/{}/".format(series[0]))
 
     # ax_all.legend(loc=0, fancybox=True)
+
+    _scale_and_save(ax_all, fig_all, filename)
+
+
+def plot_last_year(data, title, filename):
+    tz = pytz.timezone("Europe/Berlin")
+    fig_all, ax_all = _create_chart()
+
+    # Apply labels
+    _apply_labels(ax_all, title)
+
+    # Enable left and bottom ticks
+    _enable_ticks(ax_all)
+
+    # Modify x-axis for proper styling
+    ax_all.xaxis_date()
+    x_months = mdates.MonthLocator(interval=1, tz=tz)
+    x_format = mdates.DateFormatter('%b', tz=tz)
+    ax_all.xaxis.set_major_formatter(x_format)
+    ax_all.xaxis.set_major_locator(x_months)
+    ax_all.minorticks_off()
+
+    # Plot
+    for series in data:
+        ax_all.plot(series[1].index, series[1], label="/{}/".format(series[0]))
+
+    ax_all.legend(loc=0, fancybox=True)
 
     _scale_and_save(ax_all, fig_all, filename)
